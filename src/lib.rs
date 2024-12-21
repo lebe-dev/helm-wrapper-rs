@@ -36,7 +36,7 @@ pub trait HelmExecutor {
         values_overrides: Option<&HashMap<NonBlankString, NonBlankString>>,
         values_file: Option<&Path>,
         helm_options: Option<&Vec<NonBlankString>>,
-    ) -> Result<HelmUpgradeStatus, HelmWrapperError>;
+    ) -> Result<HelmDeployStatus, HelmWrapperError>;
 
     /// - `helm_options` - any other options for helm. for example '--dry-run' (optional)
     fn uninstall(
@@ -52,7 +52,7 @@ pub struct HelmListItem {
     pub namespace: String,
     pub revision: String,
     pub updated: String,
-    pub status: HelmUpgradeStatus,
+    pub status: HelmDeployStatus,
     pub chart: String,
     pub app_version: String,
 }
@@ -64,11 +64,11 @@ pub struct HelmUpgradeResponse {
 
 #[derive(Deserialize, Debug)]
 pub struct HelmUpgradeResponseInfo {
-    pub status: HelmUpgradeStatus,
+    pub status: HelmDeployStatus,
 }
 
 #[derive(PartialEq, Deserialize, Debug)]
-pub enum HelmUpgradeStatus {
+pub enum HelmDeployStatus {
     #[serde(rename = "deployed")]
     Deployed,
     #[serde(rename = "pending-install")]
@@ -199,7 +199,7 @@ impl HelmExecutor for DefaultHelmExecutor {
         values_overrides: Option<&HashMap<NonBlankString, NonBlankString>>,
         values_file: Option<&Path>,
         helm_options: Option<&Vec<NonBlankString>>,
-    ) -> Result<HelmUpgradeStatus, HelmWrapperError> {
+    ) -> Result<HelmDeployStatus, HelmWrapperError> {
         info!(
             "installing helm chart '{}' with release name '{}' to namespace '{}'..",
             chart_name, release_name, namespace
@@ -359,7 +359,7 @@ mod helm_command_tests {
             get_test_chart_name, get_test_helm_options, get_test_namespace, get_test_release_name,
             init_logging,
         },
-        DefaultHelmExecutor, HelmExecutor, HelmUpgradeStatus,
+        DefaultHelmExecutor, HelmDeployStatus, HelmExecutor,
     };
 
     #[test]
@@ -423,7 +423,7 @@ mod helm_command_tests {
             )
             .unwrap();
 
-        assert_eq!(HelmUpgradeStatus::Deployed, result);
+        assert_eq!(HelmDeployStatus::Deployed, result);
 
         let releases = executor.list(Some(&namespace)).unwrap();
 
@@ -434,7 +434,7 @@ mod helm_command_tests {
         assert_eq!(release.app_version, "1.10.3");
         assert_eq!(release.namespace, namespace.to_string());
         assert_eq!(release.name, release_name.to_string());
-        assert_eq!(release.status, HelmUpgradeStatus::Deployed);
+        assert_eq!(release.status, HelmDeployStatus::Deployed);
 
         assert!(executor.uninstall(&namespace, &release_name).is_ok());
 
