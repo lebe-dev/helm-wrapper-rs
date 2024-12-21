@@ -211,21 +211,60 @@ mod helm_upgrade_tests {
 
     use non_blank_string_rs::NonBlankString;
 
-    use crate::{tests::init_logging, DefaultHelmExecutor, HelmExecutor, HelmUpgradeStatus};
+    use crate::{
+        tests::{
+            get_test_chart_name, get_test_helm_options, get_test_namespace, get_test_release_name,
+            init_logging,
+        },
+        DefaultHelmExecutor, HelmExecutor, HelmUpgradeStatus,
+    };
+
+    fn set_kubeconfig() {
+        env::set_var("KUBECONFIG", "/etc/rancher/k3s/k3s.yaml");
+    }
+
+    #[test]
+    fn install_or_upgrade_helm_chart_with_invalid_syntax_values() {
+        init_logging();
+
+        set_kubeconfig();
+
+        let executor = DefaultHelmExecutor::new_with_opts(&"helm".parse().unwrap(), 15, true, true);
+
+        let helm_options: Vec<NonBlankString> = get_test_helm_options();
+
+        let namespace: NonBlankString = get_test_namespace();
+        let release_name: NonBlankString = get_test_release_name();
+        let chart_name: NonBlankString = get_test_chart_name();
+
+        let values_file = Path::new("test-data").join("whoami-invalid-syntax.yml");
+
+        assert!(executor
+            .install_or_upgrade(
+                &namespace,
+                &release_name,
+                &chart_name,
+                None,
+                None,
+                Some(&values_file),
+                Some(&helm_options),
+            )
+            .is_err());
+    }
 
     #[test]
     fn install_or_upgrade_helm_chart() {
         init_logging();
 
+        set_kubeconfig();
+
         let executor = DefaultHelmExecutor::new_with_opts(&"helm".parse().unwrap(), 15, true, true);
 
-        let helm_options: Vec<NonBlankString> = vec!["--create-namespace".parse().unwrap()];
+        let helm_options: Vec<NonBlankString> = get_test_helm_options();
 
-        let namespace: NonBlankString = "whoami".parse().unwrap();
-        let release_name: NonBlankString = "whoami".parse().unwrap();
-        let chart_name: NonBlankString = "cowboysysop/whoami".parse().unwrap();
-
-        env::set_var("KUBECONFIG", "/etc/rancher/k3s/k3s.yaml");
+        let namespace: NonBlankString = get_test_namespace();
+        let release_name: NonBlankString = get_test_release_name();
+        let chart_name: NonBlankString = get_test_chart_name();
 
         let mut values_overrides: HashMap<NonBlankString, NonBlankString> = HashMap::new();
 
