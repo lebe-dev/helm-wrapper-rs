@@ -13,10 +13,12 @@ Commands supported:
 
 ```toml
 [dependencies]
-helm-wrapper-rs = "0.1.0"
+helm-wrapper-rs = "0.2.0"
 ```
 
 ```rust
+use crate::nonblocking::DefaultHelmExecutor;
+
 let helm_executor = DefaultHelmExecutor::new();
 
 let releases = helm_executor.list_releases();
@@ -24,12 +26,17 @@ let releases = helm_executor.list_releases();
 println!("{}", releases);
 ```
 
+## Features
+
+- `blocking` (default)
+- `nonblocking`
+
 ## Mock
 
-Add `mock` feature:
+Add `blocking-mock` or `nonblocking-mock` features:
 
-```shell
-helm-wrapper-rs = { version = "0.1.0", features=["mock"] }
+```toml
+helm-wrapper-rs = { version = "0.2.0", features=["blocking-mock"] }
 ```
 
 Then use `MockHelmExecutor`.
@@ -44,7 +51,7 @@ What tests do:
 
 Kubernetes cluster is required. You can use K3s:
 
-```shell
+```bash
 curl -sfL https://get.k3s.io | sh -
 chown $USER: /etc/rancher/k3s/k3s.yaml
 chmod g-r /etc/rancher/k3s/k3s.yaml
@@ -54,8 +61,9 @@ export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
 Run tests:
 
-```shell
-cargo test
+```bash
+cargo test --no-default-features --features "blocking"
+cargo test --no-default-features --features "nonblocking"
 ```
 
 ## RoadMap

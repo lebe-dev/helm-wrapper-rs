@@ -1,31 +1,22 @@
-use crate::{error::HelmWrapperError, HelmDeployStatus, HelmExecutor, HelmListItem};
+use crate::{blocking::HelmExecutor, error::HelmWrapperError, HelmDeployStatus, HelmListItem};
 
-pub struct MockHelmExecutor(
-    Result<Vec<HelmListItem>, HelmWrapperError>,
-    Result<HelmDeployStatus, HelmWrapperError>,
-    Result<(), HelmWrapperError>,
-);
+pub struct SuccessMockHelmExecutor(Vec<HelmListItem>, HelmDeployStatus);
 
-impl MockHelmExecutor {
+impl SuccessMockHelmExecutor {
     pub fn new(
-        list_result: Result<Vec<HelmListItem>, HelmWrapperError>,
-        install_or_upgrade_result: Result<HelmDeployStatus, HelmWrapperError>,
-        uninstall_result: Result<(), HelmWrapperError>,
+        list_result: Vec<HelmListItem>,
+        install_or_upgrade_result: HelmDeployStatus,
     ) -> Self {
-        Self(
-            list_result.clone(),
-            install_or_upgrade_result.clone(),
-            uninstall_result,
-        )
+        Self(list_result, install_or_upgrade_result)
     }
 }
 
-impl HelmExecutor for MockHelmExecutor {
+impl HelmExecutor for SuccessMockHelmExecutor {
     fn list(
         &self,
         _namespace: Option<&non_blank_string_rs::NonBlankString>,
     ) -> Result<Vec<HelmListItem>, HelmWrapperError> {
-        self.0.clone()
+        Ok(self.0.clone())
     }
 
     fn install_or_upgrade(
@@ -43,7 +34,7 @@ impl HelmExecutor for MockHelmExecutor {
         _values_file: Option<&std::path::Path>,
         _helm_options: Option<&Vec<non_blank_string_rs::NonBlankString>>,
     ) -> Result<HelmDeployStatus, HelmWrapperError> {
-        self.1.clone()
+        Ok(self.1.clone())
     }
 
     fn uninstall(
@@ -51,6 +42,6 @@ impl HelmExecutor for MockHelmExecutor {
         _namespace: &non_blank_string_rs::NonBlankString,
         _release_name: &non_blank_string_rs::NonBlankString,
     ) -> Result<(), HelmWrapperError> {
-        self.2.clone()
+        Ok(())
     }
 }
