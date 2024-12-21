@@ -2,6 +2,12 @@
 
 **Precaution:** experimental crate
 
+Partial helm command subset implementation:
+
+- List releases
+- Install chart (through `helm upgrade --install`)
+- Uninstall chart
+
 ```toml
 [dependencies]
 helm-wrapper-rs = { git = "https://gitlab.com/weird-crates/helm-wrapper-rs", version = "0.1.0" }
