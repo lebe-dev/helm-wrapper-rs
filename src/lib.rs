@@ -52,7 +52,7 @@ pub struct HelmListItem {
     pub namespace: String,
     pub revision: String,
     pub updated: String,
-    pub status: String,
+    pub status: HelmUpgradeStatus,
     pub chart: String,
     pub app_version: String,
 }
@@ -428,6 +428,13 @@ mod helm_command_tests {
         let releases = executor.list(Some(&namespace)).unwrap();
 
         assert!(!releases.is_empty());
+
+        let release = releases.first().unwrap();
+
+        assert_eq!(release.app_version, "1.10.3");
+        assert_eq!(release.namespace, namespace.to_string());
+        assert_eq!(release.name, release_name.to_string());
+        assert_eq!(release.status, HelmUpgradeStatus::Deployed);
 
         assert!(executor.uninstall(&namespace, &release_name).is_ok());
 
