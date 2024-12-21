@@ -23,7 +23,7 @@ let helm_executor = DefaultHelmExecutor::new();
 
 let releases = helm_executor.list_releases();
 
-println!("{}", releases);
+println!("{:?}", releases);
 ```
 
 ## Features
