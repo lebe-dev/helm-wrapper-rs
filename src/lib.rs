@@ -30,6 +30,13 @@ pub trait HelmExecutor {
         values_file: Option<&Path>,
         helm_options: Option<&Vec<NonBlankString>>,
     ) -> Result<HelmUpgradeStatus, HelmWrapperError>;
+
+    /// - `helm_options` - any other options for helm. for example '--dry-run' (optional)
+    fn uninstall(
+        &self,
+        namespace: &NonBlankString,
+        release_name: &NonBlankString,
+    ) -> Result<(), HelmWrapperError>;
 }
 
 #[derive(Deserialize, Debug)]
@@ -203,6 +210,58 @@ impl HelmExecutor for DefaultHelmExecutor {
             }
         }
     }
+
+    fn uninstall(
+        &self,
+        namespace: &NonBlankString,
+        release_name: &NonBlankString,
+    ) -> Result<(), HelmWrapperError> {
+        info!(
+            "uninstalling helm release '{}', namespace '{}'..",
+            namespace, release_name
+        );
+
+        let command_args = format!(
+            "uninstall -n {} {} --timeout={}s --debug",
+            namespace,
+            release_name,
+            self.get_timeout()
+        );
+
+        let command_args: Vec<&str> = command_args.split(" ").collect();
+
+        match Command::new(&self.get_helm_path())
+            .args(command_args)
+            .output()
+        {
+            Ok(output) => {
+                if output.status.success() {
+                    let stdout = String::from_utf8(output.stdout)?;
+
+                    if self.get_unsafe_mode() {
+                        debug!("<stdout>");
+                        debug!("{}", stdout);
+                        debug!("</stdout>");
+                    }
+
+                    Ok(())
+                } else {
+                    error!("command execution error");
+                    let stderr = String::from_utf8_lossy(&output.stderr);
+
+                    error!("<stderr>");
+                    error!("{}", stderr);
+                    error!("</stderr>");
+
+                    Err(HelmWrapperError::Error)
+                }
+            }
+            Err(e) => {
+                error!("execution error: {}", e);
+                Err(HelmWrapperError::ExecutionError(e))
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -289,5 +348,7 @@ mod helm_upgrade_tests {
             .unwrap();
 
         assert_eq!(HelmUpgradeStatus::Deployed, result);
+
+        assert!(executor.uninstall(&namespace, &release_name).is_ok());
     }
 }
