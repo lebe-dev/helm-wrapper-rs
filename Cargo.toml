@@ -2,6 +2,14 @@
 name = "helm-wrapper-rs"
 version = "0.1.0"
 edition = "2021"
+description = "Helm wrapper library for Rust"
+license = "MIT OR Apache-2.0"
+authors = ["Eugene Lebedev <eugene.0x90@gmail.com>"]
+homepage = "https://github.com/lebe-dev/helm-wrapper-rs"
+repository = "https://github.com/lebe-dev/helm-wrapper-rs"
+readme = "README.md"
+keywords = ["helm", "kubernetes", "wrapper"]
+categories = ["api-bindings"]
 
 [features]
 default = []
