@@ -46,16 +46,6 @@ pub trait HelmExecutor {
     ) -> Result<(), HelmWrapperError>;
 }
 
-/*
-[
-    {
-        "name":"whoami","namespace":"whoami",
-        "revision":"1","updated":"2024-12-21 14:31:30.333560973 +0300 MSK",
-        "status":"deployed","chart":"whoami-5.2.0","app_version":"1.10.3"
-    }
-]
-*/
-
 #[derive(Deserialize, Debug)]
 pub struct HelmListItem {
     pub name: String,
@@ -152,7 +142,7 @@ impl HelmExecutor for DefaultHelmExecutor {
 
         if let Some(namespace) = namespace {
             info!("- namespace '{namespace}'");
-            command_args.push_str(&format!(" -n {} ", namespace));
+            command_args.push_str(&format!(" -n {} -o json ", namespace));
         }
 
         if self.get_debug() {
@@ -359,8 +349,8 @@ impl HelmExecutor for DefaultHelmExecutor {
 }
 
 #[cfg(test)]
-mod helm_upgrade_tests {
-    use std::{collections::HashMap, env, path::Path};
+mod helm_command_tests {
+    use std::{collections::HashMap, path::Path};
 
     use non_blank_string_rs::NonBlankString;
 
@@ -372,15 +362,9 @@ mod helm_upgrade_tests {
         DefaultHelmExecutor, HelmExecutor, HelmUpgradeStatus,
     };
 
-    fn set_kubeconfig() {
-        env::set_var("KUBECONFIG", "/etc/rancher/k3s/k3s.yaml");
-    }
-
     #[test]
     fn install_or_upgrade_helm_chart_with_invalid_syntax_values() {
         init_logging();
-
-        set_kubeconfig();
 
         let executor = DefaultHelmExecutor::new_with_opts(&"helm".parse().unwrap(), 15, true, true);
 
@@ -408,8 +392,6 @@ mod helm_upgrade_tests {
     #[test]
     fn install_or_upgrade_helm_chart() {
         init_logging();
-
-        set_kubeconfig();
 
         let executor = DefaultHelmExecutor::new_with_opts(&"helm".parse().unwrap(), 15, true, true);
 
@@ -443,6 +425,14 @@ mod helm_upgrade_tests {
 
         assert_eq!(HelmUpgradeStatus::Deployed, result);
 
+        let releases = executor.list(Some(&namespace)).unwrap();
+
+        assert!(!releases.is_empty());
+
         assert!(executor.uninstall(&namespace, &release_name).is_ok());
+
+        let releases = executor.list(Some(&namespace)).unwrap();
+
+        assert!(releases.is_empty());
     }
 }
