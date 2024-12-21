@@ -7,7 +7,7 @@ use serde::Deserialize;
 
 pub mod error;
 
-//#[cfg(feature = "mock")]
+#[cfg(feature = "mock")]
 pub mod mock;
 
 #[cfg(test)]
