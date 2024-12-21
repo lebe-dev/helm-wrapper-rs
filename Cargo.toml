@@ -6,7 +6,14 @@ edition = "2021"
 [dependencies]
 thiserror = "1.0.63"
 
+non-blank-string-rs = "1.0.4"
+
+serde = { version = "1.0.204", features = ["derive"] }
+serde_json = "1.0.120"
+
 log = "0.4.22"
 
 [dev-dependencies]
 env_logger = "0.11.5"
+
+non-blank-string-rs = { version = "1.0.4", features = ["utils"] }
