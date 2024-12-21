@@ -13,11 +13,11 @@ Commands supported:
 
 ```toml
 [dependencies]
-helm-wrapper-rs = "0.2.0"
+helm-wrapper-rs = { version = "0.2.0", features = ["blocking"] }
 ```
 
 ```rust
-use crate::nonblocking::DefaultHelmExecutor;
+use crate::blocking::DefaultHelmExecutor;
 
 let helm_executor = DefaultHelmExecutor::new();
 
