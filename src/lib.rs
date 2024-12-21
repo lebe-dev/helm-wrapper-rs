@@ -7,6 +7,9 @@ use serde::Deserialize;
 
 pub mod error;
 
+//#[cfg(feature = "mock")]
+pub mod mock;
+
 #[cfg(test)]
 pub mod tests;
 
@@ -46,7 +49,7 @@ pub trait HelmExecutor {
     ) -> Result<(), HelmWrapperError>;
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct HelmListItem {
     pub name: String,
     pub namespace: String,
@@ -57,17 +60,17 @@ pub struct HelmListItem {
     pub app_version: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct HelmUpgradeResponse {
     pub info: HelmUpgradeResponseInfo,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct HelmUpgradeResponseInfo {
     pub status: HelmDeployStatus,
 }
 
-#[derive(PartialEq, Deserialize, Debug)]
+#[derive(PartialEq, Deserialize, Debug, Clone)]
 pub enum HelmDeployStatus {
     #[serde(rename = "deployed")]
     Deployed,

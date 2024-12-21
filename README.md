@@ -1,10 +1,8 @@
 # helm-wrapper-rs
 
-**Precaution:** experimental crate
+Helm wrapper library for Rust.
 
-Partial helm command subset implementation.
-
-Features:
+Commands supported:
 
 - List releases
 - Install chart (through `helm upgrade --install`)
@@ -26,9 +24,15 @@ let releases = helm_executor.list_releases();
 println!("{}", releases);
 ```
 
-## How it works
+## Mock
 
-The create wraps `helm` executable and parse results.
+Add `mock` feature:
+
+```shell
+helm-wrapper-rs = { git = "https://gitlab.com/weird-crates/helm-wrapper-rs", version = "0.1.0", features=["mock"] }
+```
+
+Then use `MockHelmExecutor`.
 
 ## Run integration tests
 
