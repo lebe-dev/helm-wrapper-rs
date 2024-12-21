@@ -13,7 +13,17 @@ Partial helm command subset implementation:
 helm-wrapper-rs = { git = "https://gitlab.com/weird-crates/helm-wrapper-rs", version = "0.1.0" }
 ```
 
-## Run tests
+## How it works
+
+The create wraps `helm` executable and parse results.
+
+## Run integration tests
+
+What tests do:
+
+- Install whoami helm chart
+- Get information about installed charts (helm releases)
+-
 
 Kubernetes cluster is required. You can use K3s:
 
