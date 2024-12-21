@@ -13,7 +13,7 @@ Commands supported:
 
 ```toml
 [dependencies]
-helm-wrapper-rs = { git = "https://gitlab.com/weird-crates/helm-wrapper-rs", version = "0.1.0" }
+helm-wrapper-rs = "0.1.0"
 ```
 
 ```rust
@@ -29,7 +29,7 @@ println!("{}", releases);
 Add `mock` feature:
 
 ```shell
-helm-wrapper-rs = { git = "https://gitlab.com/weird-crates/helm-wrapper-rs", version = "0.1.0", features=["mock"] }
+helm-wrapper-rs = { version = "0.1.0", features=["mock"] }
 ```
 
 Then use `MockHelmExecutor`.
