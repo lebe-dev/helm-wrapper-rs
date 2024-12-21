@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-#[derive(Error, Debug, Clone)]
+#[derive(Error, Debug)]
 pub enum HelmWrapperError {
     #[error("Unable to understand helm response format")]
     DeserializationError(#[from] serde_json::Error),
