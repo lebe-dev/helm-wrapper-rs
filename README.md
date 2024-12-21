@@ -44,6 +44,7 @@ Kubernetes cluster is required. You can use K3s:
 curl -sfL https://get.k3s.io | sh -
 chown $USER: /etc/rancher/k3s/k3s.yaml
 chmod g-r /etc/rancher/k3s/k3s.yaml
+
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 ```
 
