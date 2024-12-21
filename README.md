@@ -21,9 +21,9 @@ The create wraps `helm` executable and parse results.
 
 What tests do:
 
-- Install whoami helm chart
+- Install [whoami](https://github.com/traefik/whoami) helm chart
 - Get information about installed charts (helm releases)
--
+- Uninstall whoami helm chart
 
 Kubernetes cluster is required. You can use K3s:
 
