@@ -11,6 +11,13 @@ pub mod error;
 pub mod tests;
 
 pub trait HelmExecutor {
+    /// List installed helm charts
+    /// - `namespace` - namespace (optional)
+    fn list(
+        &self,
+        namespace: Option<&NonBlankString>,
+    ) -> Result<Vec<HelmListItem>, HelmWrapperError>;
+
     /// Install or upgrade helm chart in such way:
     /// helm upgrade --install <RELEASE-NAME> <CHART-NAME> [-v CHART-VERSION] [-f VALUES-FILE] [--set <OVERRIDE_A>=<OVERRIDE_A_VALUE>]
     /// - `namespace` - target namespace
@@ -37,6 +44,27 @@ pub trait HelmExecutor {
         namespace: &NonBlankString,
         release_name: &NonBlankString,
     ) -> Result<(), HelmWrapperError>;
+}
+
+/*
+[
+    {
+        "name":"whoami","namespace":"whoami",
+        "revision":"1","updated":"2024-12-21 14:31:30.333560973 +0300 MSK",
+        "status":"deployed","chart":"whoami-5.2.0","app_version":"1.10.3"
+    }
+]
+*/
+
+#[derive(Deserialize, Debug)]
+pub struct HelmListItem {
+    pub name: String,
+    pub namespace: String,
+    pub revision: String,
+    pub updated: String,
+    pub status: String,
+    pub chart: String,
+    pub app_version: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -103,9 +131,75 @@ impl DefaultHelmExecutor {
     pub fn get_unsafe_mode(&self) -> bool {
         self.3
     }
+
+    fn remove_double_spaces_and_trim(&self, input: &str) -> String {
+        let result = input.replace("  ", " ");
+        result.trim().to_string()
+    }
 }
 
 impl HelmExecutor for DefaultHelmExecutor {
+    fn list(
+        &self,
+        namespace: Option<&NonBlankString>,
+    ) -> Result<Vec<HelmListItem>, HelmWrapperError> {
+        info!("get list of installed helm charts..");
+
+        debug!("helm executable path '{}'", self.get_helm_path());
+        debug!("timeout {}s", self.get_timeout());
+
+        let mut command_args = format!("ls");
+
+        if let Some(namespace) = namespace {
+            info!("- namespace '{namespace}'");
+            command_args.push_str(&format!(" -n {} ", namespace));
+        }
+
+        if self.get_debug() {
+            command_args.push_str(" --debug ");
+        }
+
+        command_args = self.remove_double_spaces_and_trim(&command_args);
+
+        let command_args: Vec<&str> = command_args.split(" ").collect();
+
+        match Command::new(&self.get_helm_path())
+            .args(command_args)
+            .output()
+        {
+            Ok(output) => {
+                if output.status.success() {
+                    let stdout = String::from_utf8(output.stdout)?;
+
+                    if self.get_unsafe_mode() {
+                        debug!("<stdout>");
+                        debug!("{}", stdout);
+                        debug!("</stdout>");
+                    }
+
+                    let helm_response: Vec<HelmListItem> = serde_json::from_str(&stdout)?;
+
+                    info!("response: {:?}", helm_response);
+
+                    Ok(helm_response)
+                } else {
+                    error!("command execution error");
+                    let stderr = String::from_utf8_lossy(&output.stderr);
+
+                    error!("<stderr>");
+                    error!("{}", stderr);
+                    error!("</stderr>");
+
+                    Err(HelmWrapperError::Error)
+                }
+            }
+            Err(e) => {
+                error!("execution error: {}", e);
+                Err(HelmWrapperError::ExecutionError(e))
+            }
+        }
+    }
+
     fn install_or_upgrade(
         &self,
         namespace: &NonBlankString,
