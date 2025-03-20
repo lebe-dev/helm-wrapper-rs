@@ -28,7 +28,7 @@ pub trait HelmExecutor {
         release_name: &NonBlankString,
         chart_name: &NonBlankString,
         chart_version: Option<&NonBlankString>,
-        values_overrides: Option<&HashMap<NonBlankString, NonBlankString>>,
+        values_overrides: Option<&HashMap<NonBlankString, String>>,
         values_file: Option<&Path>,
         helm_options: Option<&Vec<NonBlankString>>,
     ) -> Result<HelmDeployStatus, HelmWrapperError>;
@@ -158,7 +158,7 @@ impl HelmExecutor for DefaultHelmExecutor {
         release_name: &NonBlankString,
         chart_name: &NonBlankString,
         chart_version: Option<&NonBlankString>,
-        values_overrides: Option<&HashMap<NonBlankString, NonBlankString>>,
+        values_overrides: Option<&HashMap<NonBlankString, String>>,
         values_file: Option<&Path>,
         helm_options: Option<&Vec<NonBlankString>>,
     ) -> Result<HelmDeployStatus, HelmWrapperError> {
@@ -194,7 +194,7 @@ impl HelmExecutor for DefaultHelmExecutor {
                 if self.get_unsafe_mode() {
                     info!("- value override '{}': '{}'", k, v);
                 }
-                command_args.push_str(&format!(" --set {}={} ", k, v));
+                command_args.push_str(&format!(" --set {}='{}' ", k, v));
             }
         }
 
@@ -364,13 +364,10 @@ mod blocking_helm_command_tests {
         let release_name: NonBlankString = get_test_release_name();
         let chart_name: NonBlankString = get_test_chart_name();
 
-        let mut values_overrides: HashMap<NonBlankString, NonBlankString> = HashMap::new();
+        let mut values_overrides: HashMap<NonBlankString, String> = HashMap::new();
 
-        values_overrides.insert(
-            "startupProbe.enabled".parse().unwrap(),
-            "false".parse().unwrap(),
-        );
-        values_overrides.insert("replicaCount".parse().unwrap(), "2".parse().unwrap());
+        values_overrides.insert("startupProbe.enabled".parse().unwrap(), "false".to_string());
+        values_overrides.insert("replicaCount".parse().unwrap(), "2".to_string());
 
         let values_file = Path::new("test-data").join("whoami-values.yml");
 
