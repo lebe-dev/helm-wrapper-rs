@@ -27,10 +27,7 @@ impl HelmExecutor for SuccessMockHelmExecutor {
         _chart_name: &non_blank_string_rs::NonBlankString,
         _chart_version: Option<&non_blank_string_rs::NonBlankString>,
         _values_overrides: Option<
-            &std::collections::HashMap<
-                non_blank_string_rs::NonBlankString,
-                non_blank_string_rs::NonBlankString,
-            >,
+            &std::collections::HashMap<non_blank_string_rs::NonBlankString, String>,
         >,
         _values_file: Option<&std::path::Path>,
         _helm_options: Option<&Vec<non_blank_string_rs::NonBlankString>>,
