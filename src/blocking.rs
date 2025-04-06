@@ -110,6 +110,7 @@ impl HelmExecutor for DefaultHelmExecutor {
         info!("get list of installed helm charts..");
 
         debug!("helm executable path '{}'", self.get_helm_path());
+        debug!("kubeconfig file path '{:?}'", self.get_kubeconfig_path());
         debug!("timeout {}s", self.get_timeout());
 
         let mut command_args = format!("ls");
@@ -190,6 +191,7 @@ impl HelmExecutor for DefaultHelmExecutor {
         );
 
         debug!("helm executable path '{}'", self.get_helm_path());
+        debug!("kubeconfig file path '{:?}'", self.get_kubeconfig_path());
         debug!("timeout {}s", self.get_timeout());
 
         let mut command_args = format!(
