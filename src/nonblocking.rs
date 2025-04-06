@@ -229,7 +229,7 @@ impl HelmExecutor for DefaultHelmExecutor {
                 if self.get_unsafe_mode() {
                     info!("- value override '{}': '{}'", k, v);
                 }
-                command_args.push_str(&format!(" --set {}='{}' ", k, v));
+                command_args.push_str(&format!(" --set {}=\"{}\" ", k, v));
             }
         }
 
@@ -312,7 +312,7 @@ impl HelmExecutor for DefaultHelmExecutor {
         match &self.1 {
             Some(kubeconfig_path) => {
                 info!("- kubeconfig path '{}'", kubeconfig_path);
-                command_args.push_str(&format!(" --kubeconfig '{}' ", kubeconfig_path));
+                command_args.push_str(&format!(" --kubeconfig {} ", kubeconfig_path));
             }
             None => {
                 trace!("no kubeconfig path provided");
