@@ -115,19 +115,19 @@ impl HelmExecutor for DefaultHelmExecutor {
 
         let mut command_args = format!("ls");
 
-        if let Some(namespace) = namespace {
-            info!("- namespace '{namespace}'");
-            command_args.push_str(&format!(" -n {} -o json ", namespace));
-        }
-
         match &self.1 {
             Some(kubeconfig_path) => {
                 info!("- kubeconfig path '{}'", kubeconfig_path);
-                command_args.push_str(&format!(" --kubeconfig \"{}\" ", kubeconfig_path));
+                command_args.push_str(&format!(" --kubeconfig '{}' ", kubeconfig_path));
             }
             None => {
                 trace!("no kubeconfig path provided");
             }
+        }
+
+        if let Some(namespace) = namespace {
+            info!("- namespace '{namespace}'");
+            command_args.push_str(&format!(" -n {} -o json ", namespace));
         }
 
         if self.get_debug() {
@@ -199,6 +199,16 @@ impl HelmExecutor for DefaultHelmExecutor {
             namespace, release_name, chart_name
         );
 
+        match &self.1 {
+            Some(kubeconfig_path) => {
+                info!("- kubeconfig path '{}'", kubeconfig_path);
+                command_args.push_str(&format!(" --kubeconfig '{}' ", kubeconfig_path));
+            }
+            None => {
+                trace!("no kubeconfig path provided");
+            }
+        }
+
         if let Some(chart_version) = chart_version {
             info!("- chart version '{chart_version}'");
             command_args.push_str(&format!(" --version {} ", chart_version));
@@ -226,16 +236,6 @@ impl HelmExecutor for DefaultHelmExecutor {
             for helm_option in helm_options {
                 info!("- helm option '{helm_option}'");
                 command_args.push_str(&format!(" {helm_option} "));
-            }
-        }
-
-        match &self.1 {
-            Some(kubeconfig_path) => {
-                info!("- kubeconfig path '{}'", kubeconfig_path);
-                command_args.push_str(&format!(" --kubeconfig \"{}\" ", kubeconfig_path));
-            }
-            None => {
-                trace!("no kubeconfig path provided");
             }
         }
 
