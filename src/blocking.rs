@@ -57,6 +57,7 @@ impl DefaultHelmExecutor {
 
     /// Create execute with options:
     /// - `helm_path` - path to helm executable
+    /// - `kubeconfig_path` - path to kubeconfig file (optional)
     /// - `timeout` - timeout for helm command execution (seconds)
     /// - `debug` - debug mode, more verbose output from helm
     /// - `unsafe_mode` - print overridden values to log
@@ -118,7 +119,7 @@ impl HelmExecutor for DefaultHelmExecutor {
         match &self.1 {
             Some(kubeconfig_path) => {
                 info!("- kubeconfig path '{}'", kubeconfig_path);
-                command_args.push_str(&format!(" --kubeconfig '{}' ", kubeconfig_path));
+                command_args.push_str(&format!(" --kubeconfig {} ", kubeconfig_path));
             }
             None => {
                 trace!("no kubeconfig path provided");
@@ -202,7 +203,7 @@ impl HelmExecutor for DefaultHelmExecutor {
         match &self.1 {
             Some(kubeconfig_path) => {
                 info!("- kubeconfig path '{}'", kubeconfig_path);
-                command_args.push_str(&format!(" --kubeconfig '{}' ", kubeconfig_path));
+                command_args.push_str(&format!(" --kubeconfig {} ", kubeconfig_path));
             }
             None => {
                 trace!("no kubeconfig path provided");
@@ -311,7 +312,7 @@ impl HelmExecutor for DefaultHelmExecutor {
         match &self.1 {
             Some(kubeconfig_path) => {
                 info!("- kubeconfig path '{}'", kubeconfig_path);
-                command_args.push_str(&format!(" --kubeconfig '{}' ", kubeconfig_path));
+                command_args.push_str(&format!(" --kubeconfig {} ", kubeconfig_path));
             }
             None => {
                 trace!("no kubeconfig path provided");
