@@ -229,7 +229,7 @@ impl HelmExecutor for DefaultHelmExecutor {
                 if self.get_unsafe_mode() {
                     info!("- value override '{}': '{}'", k, v);
                 }
-                command_args.push_str(&format!(" --set {}='{}' ", k, v));
+                command_args.push_str(&format!(" --set {}={} ", k, v));
             }
         }
 
