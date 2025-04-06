@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::Path, process::Command};
 
-use log::{debug, error, info};
+use log::{debug, error, info, trace};
 use non_blank_string_rs::NonBlankString;
 
 use crate::{error::HelmWrapperError, HelmDeployStatus, HelmListItem, HelmUpgradeResponse};
@@ -42,46 +42,58 @@ pub trait HelmExecutor {
 }
 
 #[derive(Clone, Debug)]
-pub struct DefaultHelmExecutor(String, u16, bool, bool);
+pub struct DefaultHelmExecutor(String, Option<String>, u16, bool, bool);
 
 impl DefaultHelmExecutor {
     /// Create executor instance with predefined option values:
     /// - Helm path: helm
+    /// - kubeconfig path: None
     /// - Timeout: 15 (secs)
     /// - Debug: false
     /// - unsafe_mode: false - print overridden values to log
     pub fn new() -> Self {
-        Self("helm".to_string(), 15, false, false)
+        Self("helm".to_string(), None, 15, false, false)
     }
 
     /// Create execute with options:
     /// - `helm_path` - path to helm executable
-    /// - `timeout` - timeout for helm command execution
+    /// - `timeout` - timeout for helm command execution (seconds)
     /// - `debug` - debug mode, more verbose output from helm
     /// - `unsafe_mode` - print overridden values to log
     pub fn new_with_opts(
         helm_path: &NonBlankString,
+        kubeconfig_path: Option<String>,
         timeout: u16,
         debug: bool,
         unsafe_mode: bool,
     ) -> Self {
-        Self(helm_path.to_string(), timeout, debug, unsafe_mode)
+        Self(
+            helm_path.to_string(),
+            kubeconfig_path,
+            timeout,
+            debug,
+            unsafe_mode,
+        )
     }
 
     pub fn get_helm_path(&self) -> &str {
         &self.0
     }
 
-    pub fn get_timeout(&self) -> u16 {
-        self.1
+    pub fn get_kubeconfig_path(&self) -> &Option<String> {
+        &self.1
     }
 
-    pub fn get_debug(&self) -> bool {
+    pub fn get_timeout(&self) -> u16 {
         self.2
     }
 
-    pub fn get_unsafe_mode(&self) -> bool {
+    pub fn get_debug(&self) -> bool {
         self.3
+    }
+
+    pub fn get_unsafe_mode(&self) -> bool {
+        self.4
     }
 
     fn remove_double_spaces_and_trim(&self, input: &str) -> String {
@@ -105,6 +117,16 @@ impl HelmExecutor for DefaultHelmExecutor {
         if let Some(namespace) = namespace {
             info!("- namespace '{namespace}'");
             command_args.push_str(&format!(" -n {} -o json ", namespace));
+        }
+
+        match &self.1 {
+            Some(kubeconfig_path) => {
+                info!("- kubeconfig path '{}'", kubeconfig_path);
+                command_args.push_str(&format!(" --kubeconfig \"{}\" ", kubeconfig_path));
+            }
+            None => {
+                trace!("no kubeconfig path provided");
+            }
         }
 
         if self.get_debug() {
@@ -202,6 +224,16 @@ impl HelmExecutor for DefaultHelmExecutor {
             for helm_option in helm_options {
                 info!("- helm option '{helm_option}'");
                 command_args.push_str(&format!(" {helm_option} "));
+            }
+        }
+
+        match &self.1 {
+            Some(kubeconfig_path) => {
+                info!("- kubeconfig path '{}'", kubeconfig_path);
+                command_args.push_str(&format!(" --kubeconfig \"{}\" ", kubeconfig_path));
+            }
+            None => {
+                trace!("no kubeconfig path provided");
             }
         }
 
@@ -329,7 +361,8 @@ mod blocking_helm_command_tests {
     fn install_or_upgrade_helm_chart_with_invalid_syntax_values() {
         init_logging();
 
-        let executor = DefaultHelmExecutor::new_with_opts(&"helm".parse().unwrap(), 15, true, true);
+        let executor =
+            DefaultHelmExecutor::new_with_opts(&"helm".parse().unwrap(), None, 15, true, true);
 
         let helm_options: Vec<NonBlankString> = get_test_helm_options();
 
@@ -356,7 +389,8 @@ mod blocking_helm_command_tests {
     fn install_or_upgrade_helm_chart() {
         init_logging();
 
-        let executor = DefaultHelmExecutor::new_with_opts(&"helm".parse().unwrap(), 15, true, true);
+        let executor =
+            DefaultHelmExecutor::new_with_opts(&"helm".parse().unwrap(), None, 15, true, true);
 
         let helm_options: Vec<NonBlankString> = get_test_helm_options();
 
