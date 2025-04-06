@@ -301,12 +301,22 @@ impl HelmExecutor for DefaultHelmExecutor {
             namespace, release_name
         );
 
-        let command_args = format!(
+        let mut command_args = format!(
             "uninstall -n {} {} --timeout={}s --debug",
             namespace,
             release_name,
             self.get_timeout()
         );
+
+        match &self.1 {
+            Some(kubeconfig_path) => {
+                info!("- kubeconfig path '{}'", kubeconfig_path);
+                command_args.push_str(&format!(" --kubeconfig '{}' ", kubeconfig_path));
+            }
+            None => {
+                trace!("no kubeconfig path provided");
+            }
+        }
 
         let command_args: Vec<&str> = command_args.split(" ").collect();
 
