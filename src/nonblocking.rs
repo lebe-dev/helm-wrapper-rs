@@ -110,6 +110,7 @@ impl HelmExecutor for DefaultHelmExecutor {
         info!("get list of installed helm charts..");
 
         debug!("helm executable path '{}'", self.get_helm_path());
+        debug!("kubeconfig file path '{}'", self.get_kubeconfig_path());
         debug!("timeout {}s", self.get_timeout());
 
         let mut command_args = format!("ls");
@@ -190,6 +191,7 @@ impl HelmExecutor for DefaultHelmExecutor {
         );
 
         debug!("helm executable path '{}'", self.get_helm_path());
+        debug!("kubeconfig file path '{}'", self.get_kubeconfig_path());
         debug!("timeout {}s", self.get_timeout());
 
         let mut command_args = format!(
@@ -224,6 +226,16 @@ impl HelmExecutor for DefaultHelmExecutor {
             for helm_option in helm_options {
                 info!("- helm option '{helm_option}'");
                 command_args.push_str(&format!(" {helm_option} "));
+            }
+        }
+
+        match &self.1 {
+            Some(kubeconfig_path) => {
+                info!("- kubeconfig path '{}'", kubeconfig_path);
+                command_args.push_str(&format!(" --kubeconfig \"{}\" ", kubeconfig_path));
+            }
+            None => {
+                trace!("no kubeconfig path provided");
             }
         }
 
