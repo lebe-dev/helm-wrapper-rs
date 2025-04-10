@@ -275,7 +275,7 @@ impl HelmExecutor for DefaultHelmExecutor {
 
                     Ok(helm_response.info.status)
                 } else {
-                    error!("command execution error");
+                    error!("helm command execution error");
                     let stderr = String::from_utf8_lossy(&output.stderr);
 
                     error!("<stderr>");
@@ -286,7 +286,7 @@ impl HelmExecutor for DefaultHelmExecutor {
                 }
             }
             Err(e) => {
-                error!("execution error: {}", e);
+                error!("helm execution error: {}", e);
                 Err(HelmWrapperError::ExecutionError(e))
             }
         }
@@ -299,15 +299,19 @@ impl HelmExecutor for DefaultHelmExecutor {
     ) -> Result<(), HelmWrapperError> {
         info!(
             "uninstalling helm release '{}', namespace '{}'..",
-            namespace, release_name
+            release_name, namespace
         );
 
         let mut command_args = format!(
-            "uninstall -n {} {} --timeout={}s --debug",
+            "uninstall -n {} {} --timeout={}s",
             namespace,
             release_name,
             self.get_timeout()
         );
+
+        if self.get_debug() {
+            command_args.push_str(" --debug ");
+        }
 
         match &self.1 {
             Some(kubeconfig_path) => {
@@ -337,7 +341,7 @@ impl HelmExecutor for DefaultHelmExecutor {
 
                     Ok(())
                 } else {
-                    error!("command execution error");
+                    error!("helm command execution error");
                     let stderr = String::from_utf8_lossy(&output.stderr);
 
                     error!("<stderr>");
@@ -348,7 +352,7 @@ impl HelmExecutor for DefaultHelmExecutor {
                 }
             }
             Err(e) => {
-                error!("execution error: {}", e);
+                error!("helm execution error: {}", e);
                 Err(HelmWrapperError::ExecutionError(e))
             }
         }

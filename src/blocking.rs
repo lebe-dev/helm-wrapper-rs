@@ -299,15 +299,19 @@ impl HelmExecutor for DefaultHelmExecutor {
     ) -> Result<(), HelmWrapperError> {
         info!(
             "uninstalling helm release '{}', namespace '{}'..",
-            namespace, release_name
+            release_name, namespace
         );
 
         let mut command_args = format!(
-            "uninstall -n {} {} --timeout={}s --debug",
+            "uninstall -n {} {} --timeout={}s",
             namespace,
             release_name,
             self.get_timeout()
         );
+
+        if self.get_debug() {
+            command_args.push_str(" --debug ");
+        }
 
         match &self.1 {
             Some(kubeconfig_path) => {
