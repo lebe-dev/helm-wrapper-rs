@@ -339,6 +339,8 @@ impl HelmExecutor for DefaultHelmExecutor {
                         debug!("</stdout>");
                     }
 
+                    info!("helm release '{}' uninstalled successfully", release_name);
+
                     Ok(())
                 } else {
                     error!("command execution error");
