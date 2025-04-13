@@ -246,7 +246,8 @@ impl HelmExecutor for DefaultHelmExecutor {
 
         command_args.push_str(&format!(" -o json --timeout {}s ", self.get_timeout()));
 
-        let command_args = command_args.replace("  ", " ").trim();
+        let command_args = command_args.replace("  ", " ");
+        let command_args = command_args.trim();
 
         if self.get_unsafe_mode() {
             debug!("command args: '{command_args}'")
@@ -322,7 +323,8 @@ impl HelmExecutor for DefaultHelmExecutor {
             }
         }
 
-        let command_args = command_args.replace("  ", " ").trim();
+        let command_args = command_args.replace("  ", " ").to_string();
+        let command_args = command_args.trim();
 
         if self.get_unsafe_mode() {
             debug!("command args: '{command_args}'")
