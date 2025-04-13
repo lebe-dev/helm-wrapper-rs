@@ -119,10 +119,10 @@ impl HelmExecutor for DefaultHelmExecutor {
         match &self.1 {
             Some(kubeconfig_path) => {
                 info!("- kubeconfig path '{}'", kubeconfig_path);
-                command_args.push_str(&format!(" --kubeconfig {} ", kubeconfig_path));
+                command_args.push_str(&format!(" --kubeconfig={} ", kubeconfig_path));
             }
             None => {
-                trace!("no kubeconfig path provided");
+                debug!("no kubeconfig path provided");
             }
         }
 
@@ -159,7 +159,7 @@ impl HelmExecutor for DefaultHelmExecutor {
 
                     Ok(helm_response)
                 } else {
-                    error!("command execution error");
+                    error!("helm command execution error");
                     let stderr = String::from_utf8_lossy(&output.stderr);
 
                     error!("<stderr>");
@@ -170,7 +170,7 @@ impl HelmExecutor for DefaultHelmExecutor {
                 }
             }
             Err(e) => {
-                error!("execution error: {}", e);
+                error!("helm execution error: {}", e);
                 Err(HelmWrapperError::ExecutionError(e))
             }
         }
@@ -203,10 +203,10 @@ impl HelmExecutor for DefaultHelmExecutor {
         match &self.1 {
             Some(kubeconfig_path) => {
                 info!("- kubeconfig path '{}'", kubeconfig_path);
-                command_args.push_str(&format!(" --kubeconfig {} ", kubeconfig_path));
+                command_args.push_str(&format!(" --kubeconfig={} ", kubeconfig_path));
             }
             None => {
-                trace!("no kubeconfig path provided");
+                debug!("no kubeconfig path provided");
             }
         }
 
@@ -244,7 +244,7 @@ impl HelmExecutor for DefaultHelmExecutor {
             command_args.push_str(" --debug ");
         }
 
-        command_args.push_str(&format!(" -o json --timeout {}s ", self.get_timeout()));
+        command_args.push_str(&format!(" -o json --timeout={}s ", self.get_timeout()));
 
         let command_args = command_args.replace("  ", " ");
         let command_args = command_args.trim();
@@ -275,7 +275,7 @@ impl HelmExecutor for DefaultHelmExecutor {
 
                     Ok(helm_response.info.status)
                 } else {
-                    error!("command execution error");
+                    error!("helm command execution error");
                     let stderr = String::from_utf8_lossy(&output.stderr);
 
                     error!("<stderr>");
@@ -286,7 +286,7 @@ impl HelmExecutor for DefaultHelmExecutor {
                 }
             }
             Err(e) => {
-                error!("execution error: {}", e);
+                error!("helm execution error: {}", e);
                 Err(HelmWrapperError::ExecutionError(e))
             }
         }
@@ -303,9 +303,9 @@ impl HelmExecutor for DefaultHelmExecutor {
         );
 
         let mut command_args = format!(
-            "uninstall -n {} {} --timeout={}s",
-            namespace,
+            "uninstall {} -n {} --timeout={}s --wait",
             release_name,
+            namespace,
             self.get_timeout()
         );
 
@@ -323,7 +323,11 @@ impl HelmExecutor for DefaultHelmExecutor {
             }
         }
 
-        let command_args: Vec<&str> = command_args.split(" ").collect();
+        if self.get_unsafe_mode() {
+            debug!("command args: '{command_args}'")
+        }
+
+        let command_args: Vec<&str> = command_args.trim().split(" ").collect();
 
         match Command::new(&self.get_helm_path())
             .args(command_args)

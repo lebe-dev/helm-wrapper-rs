@@ -203,10 +203,10 @@ impl HelmExecutor for DefaultHelmExecutor {
         match &self.1 {
             Some(kubeconfig_path) => {
                 info!("- kubeconfig path '{}'", kubeconfig_path);
-                command_args.push_str(&format!(" --kubeconfig {} ", kubeconfig_path));
+                command_args.push_str(&format!(" --kubeconfig={} ", kubeconfig_path));
             }
             None => {
-                trace!("no kubeconfig path provided");
+                debug!("no kubeconfig path provided");
             }
         }
 
@@ -303,9 +303,9 @@ impl HelmExecutor for DefaultHelmExecutor {
         );
 
         let mut command_args = format!(
-            "uninstall -n {} {} --timeout={}s",
-            namespace,
+            "uninstall {} -n {} --timeout={}s",
             release_name,
+            namespace,
             self.get_timeout()
         );
 
@@ -316,14 +316,14 @@ impl HelmExecutor for DefaultHelmExecutor {
         match &self.1 {
             Some(kubeconfig_path) => {
                 info!("- kubeconfig path '{}'", kubeconfig_path);
-                command_args.push_str(&format!(" --kubeconfig {} ", kubeconfig_path));
+                command_args.push_str(&format!(" --kubeconfig={} ", kubeconfig_path));
             }
             None => {
-                trace!("no kubeconfig path provided");
+                debug!("no kubeconfig path provided");
             }
         }
 
-        let command_args: Vec<&str> = command_args.split(" ").collect();
+        let command_args: Vec<&str> = command_args.trim().split(" ").collect();
 
         match Command::new(&self.get_helm_path())
             .args(command_args)
