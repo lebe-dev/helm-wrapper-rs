@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::Path, process::Command};
 
-use log::{debug, error, info, trace};
+use log::{debug, error, info};
 use non_blank_string_rs::NonBlankString;
 
 use crate::{error::HelmWrapperError, HelmDeployStatus, HelmListItem, HelmUpgradeResponse};
@@ -316,10 +316,10 @@ impl HelmExecutor for DefaultHelmExecutor {
         match &self.1 {
             Some(kubeconfig_path) => {
                 info!("- kubeconfig path '{}'", kubeconfig_path);
-                command_args.push_str(&format!(" --kubeconfig {} ", kubeconfig_path));
+                command_args.push_str(&format!(" --kubeconfig={} ", kubeconfig_path));
             }
             None => {
-                trace!("no kubeconfig path provided");
+                debug!("no kubeconfig path provided");
             }
         }
 
@@ -347,7 +347,7 @@ impl HelmExecutor for DefaultHelmExecutor {
 
                     Ok(())
                 } else {
-                    error!("command execution error");
+                    error!("helmcommand execution error");
                     let stderr = String::from_utf8_lossy(&output.stderr);
 
                     error!("<stderr>");
@@ -358,7 +358,7 @@ impl HelmExecutor for DefaultHelmExecutor {
                 }
             }
             Err(e) => {
-                error!("execution error: {}", e);
+                error!("helm execution error: {}", e);
                 Err(HelmWrapperError::ExecutionError(e))
             }
         }

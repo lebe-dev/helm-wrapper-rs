@@ -303,7 +303,7 @@ impl HelmExecutor for DefaultHelmExecutor {
         );
 
         let mut command_args = format!(
-            "uninstall {} -n {} --timeout={}s",
+            "uninstall {} -n {} --timeout={}s --wait",
             release_name,
             namespace,
             self.get_timeout()
