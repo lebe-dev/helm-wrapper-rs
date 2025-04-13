@@ -246,8 +246,7 @@ impl HelmExecutor for DefaultHelmExecutor {
 
         command_args.push_str(&format!(" -o json --timeout {}s ", self.get_timeout()));
 
-        let command_args = command_args.replace("  ", " ");
-        let command_args = command_args.trim();
+        let command_args = command_args.replace("  ", " ").trim();
 
         if self.get_unsafe_mode() {
             debug!("command args: '{command_args}'")
@@ -323,11 +322,13 @@ impl HelmExecutor for DefaultHelmExecutor {
             }
         }
 
+        let command_args = command_args.replace("  ", " ").trim();
+
         if self.get_unsafe_mode() {
             debug!("command args: '{command_args}'")
         }
 
-        let command_args: Vec<&str> = command_args.trim().split(" ").collect();
+        let command_args: Vec<&str> = command_args.split(" ").collect();
 
         match Command::new(&self.get_helm_path())
             .args(command_args)
