@@ -323,6 +323,10 @@ impl HelmExecutor for DefaultHelmExecutor {
             }
         }
 
+        if self.get_unsafe_mode() {
+            debug!("command args: '{command_args}'")
+        }
+
         let command_args: Vec<&str> = command_args.trim().split(" ").collect();
 
         match Command::new(&self.get_helm_path())
