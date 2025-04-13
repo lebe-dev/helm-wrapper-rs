@@ -13,7 +13,7 @@ Commands supported:
 
 ```toml
 [dependencies]
-helm-wrapper-rs = { version = "0.2.0", features = ["blocking"] }
+helm-wrapper-rs = { version = "0.4.0", features = ["blocking"] }
 ```
 
 ```rust
@@ -21,7 +21,21 @@ use crate::blocking::DefaultHelmExecutor;
 
 let helm_executor = DefaultHelmExecutor::new();
 
-let releases = helm_executor.list_releases();
+helm_executor.uninstall("namespace", "release")?;
+
+helm_executor.install_or_upgrade(
+    namespace,
+    release_name,
+    chart_name,
+    chart_version,
+    values_overrides,
+    values_file,
+    helm_options,
+)?;
+
+let releases = helm_executor.list_releases()?;
+
+helm_executor.uninstall("namespace", "release")?;
 
 println!("{:?}", releases);
 ```
@@ -36,7 +50,7 @@ println!("{:?}", releases);
 Add `blocking-mock` or `nonblocking-mock` features:
 
 ```toml
-helm-wrapper-rs = { version = "0.2.0", features=["blocking-mock"] }
+helm-wrapper-rs = { version = "0.4.0", features=["blocking-mock"] }
 ```
 
 Then use `MockHelmExecutor`.
