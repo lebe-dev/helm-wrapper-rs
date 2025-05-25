@@ -13,7 +13,7 @@ Commands supported:
 
 ```toml
 [dependencies]
-helm-wrapper-rs = { version = "0.4.0", features = ["blocking"] }
+helm-wrapper-rs = { version = "0.4.1", features = ["blocking"] }
 ```
 
 ```rust
@@ -50,7 +50,7 @@ println!("{:?}", releases);
 Add `blocking-mock` or `nonblocking-mock` features:
 
 ```toml
-helm-wrapper-rs = { version = "0.4.0", features=["blocking-mock"] }
+helm-wrapper-rs = { version = "0.4.1", features=["blocking-mock"] }
 ```
 
 Then use `MockHelmExecutor`.
