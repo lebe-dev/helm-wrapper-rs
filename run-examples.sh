@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Install `whoami` before running tests:
 # helm repo add cowboysysop https://cowboysysop.github.io/charts/
 # helm repo update
