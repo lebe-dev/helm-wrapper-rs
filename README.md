@@ -57,15 +57,9 @@ Then use `MockHelmExecutor`.
 
 ## Development
 
-First of all install `mold` linker for better performance.
+First of all I suggest you to install `mold` linker for faster compilation time.
 
 ### Run integration tests
-
-What tests do:
-
-- Install [whoami](https://github.com/traefik/whoami) helm chart
-- Get information about installed charts (helm releases)
-- Uninstall whoami helm chart
 
 Kubernetes cluster is required. You can use K3s:
 
