@@ -27,3 +27,11 @@ echo
 echo "Running nonblocking_list example..."
 cargo run --example nonblocking_list --features nonblocking
 echo
+
+echo "Running blocking_install_or_upgrade example..."
+cargo run --example blocking_install_or_upgrade --features blocking
+echo
+
+echo "Running nonblocking_install_or_upgrade example..."
+cargo run --example nonblocking_install_or_upgrade --features nonblocking
+echo

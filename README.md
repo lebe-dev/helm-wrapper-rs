@@ -11,52 +11,28 @@ Commands supported:
 
 ## Getting started
 
-To use `helm-wrapper-rs`, add it to your `Cargo.toml`. For example, to use the `nonblocking` feature:
+To use `helm-wrapper-rs`, add it to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-helm-wrapper-rs = { version = "0.4.1", features = ["nonblocking"] }
-tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
-non-blank-string-rs = "1.0.4"
+helm-wrapper-rs = "0.4.1"
 ```
-
-You can find an example of how to list Helm releases using the nonblocking API in `examples/nonblocking_list.rs`.
-
-To run all examples, ensure your `KUBECONFIG` environment variable is set correctly and then execute:
-```bash
-./run-examples.sh
-```
-Make sure the script is executable: `chmod +x run-examples.sh`.
 
 ## Features
 
-- `blocking` (default) - See example below for blocking usage.
+- `blocking` (default)
 - `nonblocking`
 
-### Blocking Feature Example
+## Examples
 
-To use the `blocking` feature (which is enabled by default if no other feature is specified):
-
-```toml
-[dependencies]
-helm-wrapper-rs = { version = "0.4.1", features = ["blocking"] }
-non-blank-string-rs = "1.0.4"
-```
-
-You can find an example of how to list Helm releases using the blocking API in `examples/blocking_list.rs`.
-
-To run all examples, ensure your `KUBECONFIG` environment variable is set correctly and then execute:
-```bash
-./run-examples.sh
-```
-Make sure the script is executable: `chmod +x run-examples.sh`.
+Check [examples](examples) directory for usage examples.
 
 ## Mock
 
 Add `blocking-mock` or `nonblocking-mock` features:
 
 ```toml
-helm-wrapper-rs = { version = "0.4.1", features=["blocking-mock"] }
+helm-wrapper-rs = { version = "0.4.1", features = ["blocking-mock"] }
 ```
 
 Then use `MockHelmExecutor`.
