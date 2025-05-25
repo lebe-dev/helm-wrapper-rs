@@ -55,7 +55,11 @@ helm-wrapper-rs = { version = "0.4.0", features=["blocking-mock"] }
 
 Then use `MockHelmExecutor`.
 
-## Run integration tests
+## Development
+
+First of all install `mold` linker for better performance.
+
+### Run integration tests
 
 What tests do:
 
