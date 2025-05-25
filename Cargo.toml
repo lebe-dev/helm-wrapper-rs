@@ -19,19 +19,19 @@ blocking-mock = []
 nonblocking-mock = ["dep:tokio"]
 
 [dependencies]
-thiserror = "1.0.63"
+thiserror = "2.0.12"
 
 non-blank-string-rs = "1.0.4"
 
-serde = { version = "1.0.204", features = ["derive"] }
-serde_json = "1.0.120"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
 
-tokio = { version = "1.42.0", features = ["full"], optional = true }
+tokio = { version = "1.45.1", features = ["full"], optional = true }
 
-log = "0.4.22"
+log = "0.4.27"
 
 [dev-dependencies]
-env_logger = "0.11.5"
+env_logger = "0.11.8"
 
 non-blank-string-rs = { version = "1.0.4", features = ["utils"] }
 
