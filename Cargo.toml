@@ -50,3 +50,11 @@ required-features = ["nonblocking"]
 [[example]]
 name = "blocking_install_or_upgrade"
 required-features = ["blocking"]
+
+[[example]]
+name = "nonblocking_uninstall"
+required-features = ["nonblocking"]
+
+[[example]]
+name = "blocking_uninstall"
+required-features = ["blocking"]
